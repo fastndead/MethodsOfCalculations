@@ -1,87 +1,83 @@
 ﻿using System.Collections.Generic;
 using System;
-using System.IO;
-using System.Linq;
 
 namespace Методы_вычислений
 {
     class Program
     {
+        public static void solveMatrix (int n, List<double> a, List<double> b, List<double> c, List<double> d, List<double> x)
+        {
+            var y = new List<double>();
+            var alpha = new List<double>();
+            var betha = new List<double>();
+            
+            y.Add(b[0]);
+            alpha.Add(-c[0]/y[0]);
+            betha.Add(d[0]/y[0]);
+
+            for (int i = 1; i < n-1; i++)
+            {
+                y.Add(b[i] + a[i] * alpha[i - 1]);
+                alpha.Add(-c[i]/y[i]);
+                betha.Add((d[i] - a[i] * betha[i-1]) / y[i]);
+            }
+
+            y.Add(b[n-1] + a[n-1] * alpha[n - 2]);
+            betha.Add((d[n - 1] - a[n - 1] * betha[n - 2]) / y[n - 1]);
+
+            for (int i = 0; i < n; i++)
+            {
+                x.Add(0);
+            }
+
+            x[n - 1] = betha[n - 1];
+            
+            for (int i = n-2; i >= 0; i--)
+            {
+                x[i] = (alpha[i] * x[i + 1] + betha[i]);
+            }
+        }
+
         static void Main()
         {
-            Gaus Solution = new Gaus(4, 4);
-
-            Solution.RightPart[0] = 5;
-            Solution.RightPart[1] = 8;
-            Solution.RightPart[2] = 4;
-            Solution.RightPart[3] = 7;
-
-            for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+            Console.Write("Enter n: ");
+            var n = int.Parse(Console.ReadLine());
+            Console.WriteLine("Enter the upper diagonal: ");
+            var c = new List<double>();
+            for (int i = 0; i < n-1; i++)
             {
-                Console.Write("a[{0}][{1}] = ", i + 1, j + 1);
-                Solution.Matrix[i][j] = int.Parse(Console.ReadLine());
+               c.Add(double.Parse(Console.ReadLine()));
             }
-            Console.WriteLine("----------------------------------------------------");
-            var count = 0;
-            foreach (var row in Solution.Matrix)
+            
+            Console.WriteLine("Enter the main diagonal: ");
+            var b = new List<double>();
+            for (int i = 0; i < n; i++)
             {
-                foreach (var number in row)
-                {
-                    Console.Write("{0}\t", number);
-                }
-
-                Console.Write("|\t{0}", Solution.RightPart[count]);
-                count++;
-                Console.WriteLine();
+                b.Add(double.Parse(Console.ReadLine()));
             }
-
-            Solution.SolveMatrix();
-
-            Console.WriteLine("----------------------------------------------------");
-
-            count = 0;
-            foreach (var row in Solution.Matrix)
+            
+            Console.WriteLine("Enter the lower diagonal: ");
+            var a = new List<double>();
+            a.Add(0);
+            for (int i = 0; i < n-1; i++)
             {
-
-                for (int i = 0; i < row.Length; i++)
-                {
-                    row[i] /= row[count];
-                }
-
-                count++;
+                a.Add(double.Parse(Console.ReadLine()));
             }
-            count = 0;
-            foreach (var row in Solution.Matrix)
+            
+            Console.WriteLine("Enter the right part: ");
+            var d = new List<double>();
+            for (int i = 0; i < n; i++)
             {
-                foreach (var number in row)
-                {
-                    Console.Write("{0}\t", number.ToString("F3"));
-                }
-
-                if (count != 3)
-                {
-                    Console.Write("|\t{0}", Solution.RightPart[count]);    
-                }
-                else
-                {
-                    Console.Write("|\t{0}", Solution.Answer[count]);
-                }
-                count++;
-                Console.WriteLine();
+                d.Add(double.Parse(Console.ReadLine()));
             }
+            
+            var x = new List<double>();
 
-            double[] ReturnVal = new double[4];
+            solveMatrix(n, a, b, c, d, x);
 
-            ReturnVal[0] = Solution.Answer[0];
-            ReturnVal[1] = Solution.Answer[1];
-            ReturnVal[2] = Solution.Answer[2];
-            ReturnVal[3] = Solution.Answer[3];
-
-            Console.WriteLine("----------------------------------------------------");
-            for (int i = 0; i < 4; i++)
+            foreach (var number in x)
             {
-                Console.WriteLine("x[{0}] = {1}",i+1,ReturnVal[i]);
+                Console.WriteLine(number);
             }
         }
     }
